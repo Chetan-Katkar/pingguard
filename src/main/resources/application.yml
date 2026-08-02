@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: PingGuard
+
+  datasource:
+    url: jdbc:postgresql://localhost:5433/pingguard
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  # Temporary: Disable Spring Security so it doesn't block us while testing
+  security:
+    user:
+      name: admin
+      password: admin
