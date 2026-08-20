@@ -41,7 +41,10 @@ public class AuthService {
 
         userRepository.save(user);
 
-        String token = tokenProvider.generateToken(user.getEmail());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                user.getEmail(), null, new java.util.ArrayList<>()
+        );
+        String token = tokenProvider.generateToken(authentication);
         return new AuthResponse(token);
     }
 
@@ -55,7 +58,7 @@ public class AuthService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String token = tokenProvider.generateToken(loginRequest.getEmail());
+        String token = tokenProvider.generateToken(authentication);
         return new AuthResponse(token);
     }
 }
