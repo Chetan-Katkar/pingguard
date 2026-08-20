@@ -8,6 +8,8 @@ import com.pingguard.exception.MonitorLimitExceededException;
 import com.pingguard.exception.ResourceNotFoundException;
 import com.pingguard.repository.MonitorRepository;
 import com.pingguard.repository.UserRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,7 @@ public class MonitorService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
+    @CacheEvict(value = "monitors", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName()")
     public MonitorResponse createMonitor(MonitorRequest request) {
         User user = getCurrentUser();
 
@@ -53,6 +56,7 @@ public class MonitorService {
         return MonitorResponse.fromEntity(saved);
     }
 
+    @Cacheable(value = "monitors", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName()")
     public List<MonitorResponse> getAllMonitors() {
         User user = getCurrentUser();
         return monitorRepository.findAllByUserId(user.getId())
@@ -68,6 +72,7 @@ public class MonitorService {
         return MonitorResponse.fromEntity(monitor);
     }
 
+    @CacheEvict(value = "monitors", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName()")
     public MonitorResponse updateMonitor(Long id, MonitorRequest request) {
         User user = getCurrentUser();
         Monitor monitor = monitorRepository.findByIdAndUserId(id, user.getId())
@@ -84,6 +89,7 @@ public class MonitorService {
         return MonitorResponse.fromEntity(updated);
     }
 
+    @CacheEvict(value = "monitors", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName()")
     public void deleteMonitor(Long id) {
         User user = getCurrentUser();
         Monitor monitor = monitorRepository.findByIdAndUserId(id, user.getId())

@@ -2,6 +2,7 @@ package com.pingguard.service;
 
 import com.pingguard.dto.StatsResponse;
 import com.pingguard.repository.PingLogRepository;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ public class StatsService {
         this.pingLogRepository = pingLogRepository;
     }
 
+    @Cacheable(value = "stats", key = "#monitorId")
     public StatsResponse getMonitorStats(Long monitorId) {
         StatsResponse stats = new StatsResponse();
         LocalDateTime now = LocalDateTime.now();

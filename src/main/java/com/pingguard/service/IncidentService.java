@@ -19,10 +19,12 @@ public class IncidentService {
 
     private final IncidentRepository incidentRepository;
     private final PingLogRepository pingLogRepository;
+    private final AlertService alertService;
 
-    public IncidentService(IncidentRepository incidentRepository, PingLogRepository pingLogRepository) {
+    public IncidentService(IncidentRepository incidentRepository, PingLogRepository pingLogRepository, AlertService alertService) {
         this.incidentRepository = incidentRepository;
         this.pingLogRepository = pingLogRepository;
+        this.alertService = alertService;
     }
 
     @Transactional
@@ -40,7 +42,8 @@ public class IncidentService {
                 
                 incidentRepository.save(incident);
                 
-                // TODO: Trigger "Monitor is back UP" alert (Week 3)
+                // Trigger "Monitor is back UP" alert
+                alertService.sendUpAlerts(incident);
             }
         } else {
             // If the monitor is DOWN, apply the 3-strike rule before opening an incident
@@ -56,11 +59,12 @@ public class IncidentService {
                     // The incident actually started at the time of the *first* failed ping of the 3
                     incident.setStartedAt(last3Pings.get(2).getCheckedAt());
                     incident.setCause(latestPing.getErrorMessage());
-                    incident.setAlertSent(false); // We will send alert asynchronously in Week 3
+                    incident.setAlertSent(true);
                     
                     incidentRepository.save(incident);
                     
-                    // TODO: Trigger "Monitor is DOWN" alert (Week 3)
+                    // Trigger "Monitor is DOWN" alert
+                    alertService.sendDownAlerts(incident);
                 }
             }
         }
